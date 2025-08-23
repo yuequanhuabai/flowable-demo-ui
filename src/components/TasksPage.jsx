@@ -357,19 +357,56 @@ const TasksPage = () => {
                                             <div><strong>Process:</strong> {task.processInstanceId?.substring(0, 8)}...</div>
                                             
                                             {task.variables?.leaveType && (
-                                                <div><strong>Leave Type:</strong> {task.variables.leaveType}</div>
+                                                <div><strong>请假类型:</strong> {task.variables.leaveType}</div>
+                                            )}
+                                            {task.variables?.days && (
+                                                <div><strong>请假天数:</strong> {task.variables.days} 天</div>
                                             )}
                                             
-                                            <div style={{ 
-                                                marginTop: '10px', 
-                                                padding: '5px 10px', 
-                                                backgroundColor: '#28a745', 
-                                                color: 'white', 
-                                                borderRadius: '4px',
-                                                display: 'inline-block',
-                                                fontSize: '12px'
-                                            }}>
-                                                已完成
+                                            {/* Show different status based on task type and result */}
+                                            <div style={{ marginTop: '10px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                                                <div style={{ 
+                                                    padding: '5px 10px', 
+                                                    backgroundColor: task.isSubmitTask ? '#007bff' : '#28a745', 
+                                                    color: 'white', 
+                                                    borderRadius: '4px',
+                                                    fontSize: '12px'
+                                                }}>
+                                                    {task.isSubmitTask ? '已提交' : task.isReviewTask ? '已审批' : '已完成'}
+                                                </div>
+                                                
+                                                {/* Show final result for submitted requests */}
+                                                {task.isSubmitTask && task.finalResult && (
+                                                    <div style={{ 
+                                                        padding: '5px 10px', 
+                                                        backgroundColor: task.finalResult === 'approved' ? '#28a745' : '#dc3545', 
+                                                        color: 'white', 
+                                                        borderRadius: '4px',
+                                                        fontSize: '12px'
+                                                    }}>
+                                                        {task.finalResult === 'approved' ? '最终批准' : '最终拒绝'}
+                                                    </div>
+                                                )}
+                                                
+                                                {/* Show action result for review tasks */}
+                                                {task.isReviewTask && task.action && (
+                                                    <div style={{ 
+                                                        padding: '5px 10px', 
+                                                        backgroundColor: task.action === 'approved' ? '#28a745' : 
+                                                                         task.action === 'rejected' ? '#dc3545' : '#6c757d', 
+                                                        color: 'white', 
+                                                        borderRadius: '4px',
+                                                        fontSize: '12px'
+                                                    }}>
+                                                        {task.action === 'approved' ? '已批准' : 
+                                                         task.action === 'rejected' ? '已拒绝' : '已审批'}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            
+                                            {/* Show process status */}
+                                            <div style={{ marginTop: '5px', fontSize: '12px', color: '#666' }}>
+                                                流程状态: {task.processFinished ? '已完成' : '进行中'}
                                             </div>
                                         </>
                                     )}
