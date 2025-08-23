@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import ProcessProgress from './ProcessProgress';
 
 const HomePage = () => {
     const { user } = useAuth();
@@ -12,6 +13,8 @@ const HomePage = () => {
     });
     const [runningProcesses, setRunningProcesses] = useState([]);
     const [processHistory, setProcessHistory] = useState([]);
+    const [showProgressModal, setShowProgressModal] = useState(false);
+    const [selectedProcessId, setSelectedProcessId] = useState(null);
 
     useEffect(() => {
         fetchRunningProcesses();
@@ -113,6 +116,16 @@ const HomePage = () => {
 
     const formatDate = (dateString) => {
         return new Date(dateString).toLocaleDateString('en-US');
+    };
+
+    const viewProcessProgress = (processInstanceId) => {
+        setSelectedProcessId(processInstanceId);
+        setShowProgressModal(true);
+    };
+
+    const closeProgressModal = () => {
+        setShowProgressModal(false);
+        setSelectedProcessId(null);
     };
 
     return (
@@ -221,7 +234,31 @@ const HomePage = () => {
                                         <div>Started: {formatDate(process.startTime)}</div>
                                         <div>Type: {process.variables?.leaveType || 'N/A'}</div>
                                         <div>Days: {process.variables?.days || 'N/A'}</div>
-                                        <div>Status: <span style={{ color: '#28a745' }}>In Progress</span></div>
+                                        <div>Status: <span style={{ 
+                                            color: process.status === 'Pending Action' ? '#dc3545' : '#ffc107',
+                                            fontWeight: 'bold'
+                                        }}>{process.status === 'Pending Action' ? '需要处理' : '等待他人'}</span></div>
+                                        {process.currentTask && (
+                                            <div>Current Task: {process.currentTask}</div>
+                                        )}
+                                        {process.currentAssignee && process.status === 'Waiting Others' && (
+                                            <div>Assignee: {process.currentAssignee}</div>
+                                        )}
+                                        <button 
+                                            onClick={() => viewProcessProgress(process.processInstanceId)}
+                                            style={{ 
+                                                marginTop: '10px',
+                                                padding: '5px 10px',
+                                                backgroundColor: '#17a2b8',
+                                                color: 'white',
+                                                border: 'none',
+                                                borderRadius: '3px',
+                                                cursor: 'pointer',
+                                                fontSize: '12px'
+                                            }}
+                                        >
+                                            查看进度
+                                        </button>
                                     </div>
                                 ))}
                             </div>
@@ -243,6 +280,21 @@ const HomePage = () => {
                                         <div>Status: <span style={{ color: process.variables?.approved ? '#28a745' : '#dc3545' }}>
                                             {process.variables?.approved ? 'Approved' : 'Rejected'}
                                         </span></div>
+                                        <button 
+                                            onClick={() => viewProcessProgress(process.processInstanceId)}
+                                            style={{ 
+                                                marginTop: '10px',
+                                                padding: '5px 10px',
+                                                backgroundColor: '#6c757d',
+                                                color: 'white',
+                                                border: 'none',
+                                                borderRadius: '3px',
+                                                cursor: 'pointer',
+                                                fontSize: '12px'
+                                            }}
+                                        >
+                                            查看详情
+                                        </button>
                                     </div>
                                 ))}
                             </div>
@@ -252,6 +304,14 @@ const HomePage = () => {
                     </div>
                 </div>
             </div>
+            
+            {/* Process Progress Modal */}
+            {showProgressModal && selectedProcessId && (
+                <ProcessProgress 
+                    processInstanceId={selectedProcessId}
+                    onClose={closeProgressModal}
+                />
+            )}
         </div>
     );
 };

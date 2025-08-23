@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const checkUser = async () => {
             try {
-                const response = await fetch('/api/me', {
+                const response = await fetch('/api/current-user', {
                     credentials: 'include'
                 });
                 if (response.ok) {
