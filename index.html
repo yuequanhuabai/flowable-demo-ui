@@ -3,24 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flowable Demo</title>
+    <title>OAuth2 PKCE 演示</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Welcome to Flowable Demo</h1>
+            <h1>OAuth2 PKCE 演示應用</h1>
+            <div class="user-info" id="userInfo" style="display: none;">
+                <span id="username"></span>
+                <button id="logoutBtn" class="btn btn-danger">登出</button>
+            </div>
         </header>
         
         <main>
-            <div class="content">
-                <p>This is the home page for the Flowable workflow demo project.</p>
-                <p>A simple HTML + CSS + JavaScript frontend.</p>
+            <!-- 登入頁面 -->
+            <div id="loginPage" class="page">
+                <div class="login-container">
+                    <h2>OAuth2 PKCE 授權流程演示</h2>
+                    <p>這個應用演示了使用 PKCE (Proof Key for Code Exchange) 的 OAuth2 授權碼流程</p>
+                    
+                    <div class="flow-explanation">
+                        <h3>PKCE 流程說明：</h3>
+                        <ol>
+                            <li>點擊登入按鈕</li>
+                            <li>生成 code_verifier 和 code_challenge</li>
+                            <li>重定向到授權服務器</li>
+                            <li>輸入用戶名密碼並授權</li>
+                            <li>返回應用並用 code_verifier 驗證</li>
+                            <li>獲取訪問令牌</li>
+                        </ol>
+                    </div>
+                    
+                    <button id="loginBtn" class="btn btn-primary">使用 OAuth2 PKCE 登入</button>
+                    
+                    <div class="test-accounts">
+                        <h4>測試帳戶：</h4>
+                        <p>用戶名: user, 密碼: password</p>
+                        <p>用戶名: admin, 密碼: admin</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 儀表板頁面 -->
+            <div id="dashboardPage" class="page" style="display: none;">
+                <div class="dashboard-content">
+                    <div class="card">
+                        <h3>用戶信息</h3>
+                        <div id="userDetails" class="user-details"></div>
+                    </div>
+
+                    <div class="card">
+                        <h3>API 測試</h3>
+                        <div class="api-test-section">
+                            <div class="api-test-item">
+                                <button id="publicApiBtn" class="btn btn-info">調用公開 API</button>
+                                <div id="publicApiResult" class="api-result"></div>
+                            </div>
+                            
+                            <div class="api-test-item">
+                                <button id="userApiBtn" class="btn btn-warning">調用用戶 API (需要 read 權限)</button>
+                                <div id="userApiResult" class="api-result"></div>
+                            </div>
+                            
+                            <div class="api-test-item">
+                                <button id="adminApiBtn" class="btn btn-danger">調用管理 API (需要 write 權限)</button>
+                                <div id="adminApiResult" class="api-result"></div>
+                            </div>
+                            
+                            <div class="api-test-item">
+                                <button id="tokenInfoBtn" class="btn btn-secondary">查看令牌信息</button>
+                                <div id="tokenInfoResult" class="api-result"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>OAuth2 PKCE 流程回顧</h3>
+                        <div class="flow-review">
+                            <p>✅ <strong>步驟1:</strong> 生成 code_verifier 和 code_challenge</p>
+                            <p>✅ <strong>步驟2:</strong> 重定向到授權服務器（帶 code_challenge）</p>
+                            <p>✅ <strong>步驟3:</strong> 用戶登入並授權</p>
+                            <p>✅ <strong>步驟4:</strong> 授權服務器返回授權碼</p>
+                            <p>✅ <strong>步驟5:</strong> 用授權碼和 code_verifier 換取訪問令牌</p>
+                            <p>✅ <strong>步驟6:</strong> 使用訪問令牌調用受保護的 API</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 回調處理 -->
+            <div id="callbackPage" class="page" style="display: none;">
+                <div class="callback-container">
+                    <h2>處理授權回調...</h2>
+                    <p>正在用授權碼換取訪問令牌</p>
+                    <div class="loading-spinner"></div>
+                    <div id="callbackMessage"></div>
+                </div>
             </div>
         </main>
         
         <footer>
-            <p>&copy; 2024 Flowable Demo Project</p>
+            <p>&copy; 2024 OAuth2 PKCE Demo Project</p>
         </footer>
     </div>
     

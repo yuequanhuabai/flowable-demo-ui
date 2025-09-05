@@ -3,9 +3,16 @@ const fs = require('fs');
 const path = require('path');
 
 const server = http.createServer((req, res) => {
-    // 處理根路徑，默認返回index.html
-    let filePath = req.url === '/' ? '/index.html' : req.url;
-    filePath = path.join(__dirname, filePath);
+    // 解析URL，忽略查询参数
+    const urlPath = req.url.split('?')[0];
+    
+    // 处理静态资源（有文件扩展名的）
+    if (path.extname(urlPath)) {
+        var filePath = path.join(__dirname, urlPath);
+    } else {
+        // 对于没有扩展名的路径（如 /callback），返回 index.html（SPA路由）
+        var filePath = path.join(__dirname, 'index.html');
+    }
     
     // 獲取文件擴展名來設置正確的Content-Type
     const ext = path.extname(filePath).toLowerCase();
